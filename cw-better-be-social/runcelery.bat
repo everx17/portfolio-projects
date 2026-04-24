@@ -1,0 +1,1 @@
+start cmd /C start celery --app=better.celery:app worker --loglevel=INFO --pool=solo --pidfile=celery.pid

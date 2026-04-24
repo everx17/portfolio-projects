@@ -1,0 +1,80 @@
+{% load bootstrap4 %}
+
+<style>
+  .mui-appbar {
+    background-color: #1e4b23; 
+  }
+</style>
+<div class="mui-appbar">
+  <table width="100%">
+    <tr style="vertical-align:middle;">
+      <td class="mui--appbar-height">
+        <div style="display: flex; align-items: center;">
+          <h1 class="mui--text-display1 m-0" style="color: #fff;">Better BeSocial</h1>
+          {% if user.is_authenticated %}
+          <img src="/images/{{ app_user.avatar }}" id="logo" alt="avatar" width="50px" height="50px"
+            style="margin-left: 10px;">
+          {% endif %}
+          <div>
+      </td>
+      <td class="mui--appbar-height" align="right">
+        <div class="mui-btn-group">
+          <a href="/" class="mui-btn mui-btn--flat mui-btn--secondary">Home</a>
+          {% if user.is_authenticated %}
+          <a href="#" class="mui-btn mui-btn--flat mui-btn--secondary">Hello {{ user.username }}</a>
+          <a href="/logout/" class="mui-btn mui-btn--flat mui-btn--secondary">Logout</a>
+          <button class="mui-btn mui-btn--flat mui-btn--secondary" onclick="SettingsModalButton()">User Settings</button>
+          {% else %}
+          <a href="/register/" class="mui-btn mui-btn--flat mui-btn--secondary">Register</a>
+          <a href="/login/" class="mui-btn mui-btn--flat mui-btn--secondary">Log In</a>
+          {% endif %}
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+{% if user.is_authenticated %}
+<script>
+  function SettingsModalButton() {
+    // initialize modal element
+    var UserSettingsModal = document.createElement('div');
+    UserSettingsModal.style.width = '500px';
+    UserSettingsModal.style.margin = '150px auto';
+    UserSettingsModal.style.padding = '20px';
+    UserSettingsModal.style.backgroundColor = '#76917d';
+    UserSettingsModal.innerHTML = `
+      {% if user_form %}
+<hr />
+<h1>Update your profile</h1>
+<form action="/update_profile/" method="post" class="form" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% bootstrap_form profile_form %}
+    {% bootstrap_form avatar_form %}
+    <input type="submit" value="Submit">
+</form>
+<hr />
+<h1>Update your account data</h1>
+<form action="/update_user/" method="post" class="form">
+    {% csrf_token %}
+    {% bootstrap_form user_form %}
+    <input type="submit" value="Submit">
+</form>
+{% else %}
+{%if following %}
+<form action="/unfollow/{{target_user.username}}/" method="POST">
+    {%csrf_token%}
+    <button> Unfollow {{target_user.username}} </button>
+</form>
+{%else %}
+<form action="/follow/{{target_user.username}}/" method="POST" enctype="multipart/form-data">
+    {%csrf_token%}
+    <button> Follow {{target_user.username}} </button>
+</form>
+{% endif %}
+{% endif %}`
+    // show modal
+    mui.overlay('on', UserSettingsModal);
+  }
+</script>
+{% endif %}

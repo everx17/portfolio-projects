@@ -1,0 +1,8 @@
+[Ll]ibrary/
+[Ll]ogs/
+[Tt]emp/
+[Oo]bj/
+UserSettings/
+Build/
+*.csproj
+*.sln

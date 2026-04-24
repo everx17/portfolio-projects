@@ -1,0 +1,90 @@
+{% include "./header.html" %}
+{% include "./title.html" %}
+
+<div class=".mui-container-fluid">
+
+  <div class="row">
+
+    <div class="col-4" id="user_list">
+      {% if user.is_authenticated %}
+      Welcome back, {{user.username}}.<br />
+      <img src="/images/{{ app_user.avatar }}" id="logo" alt="avatar" width="150px" height="150px">
+      {% else %}
+      <table>
+        <tr>
+          <th>Login to see your profile<br />
+            <br>
+            Join these users and BeSocial</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+          <td><a href="/user/{{user.username}}">{{user.username}}</a></td>
+        </tr>
+        {% endfor %}
+        <br>
+      </table>
+      {% endif %}
+      {% if user.is_authenticated %}
+      <table>
+        <tr>
+            <th>
+                {% if user_form %}
+                People you follow:
+                {% else %}
+                People {{target_user.username}} follows:
+                {% endif %}
+            </th>
+        </tr>
+        {% for link in followeds %}
+        <tr>
+            <td><a href="/user/{{link.followed.username}}">{{link.followed.username}}</a></td>
+        </tr>
+        {% endfor %}
+
+    </table>
+    {% endif %}
+    {% if user.is_authenticated %}
+    <table>
+        <tr>
+            <th>
+                {% if user_form %}
+                People following you:
+                {% else %}
+                People following {{target_user.username}}:
+                {% endif %}
+            </th>
+        </tr>
+        {% for link in followers %}
+        <tr>
+            <td><a href="/user/{{link.follower.username}}">{{link.follower.username}}</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    <br>
+    {% if user.is_authenticated %}
+    <form action="{% url 'results' %}" method="get">
+      <input name="q" type="text" placeholder="Search user..." class="mui-input">
+    </form>
+    {% endif %}
+    <br>
+    <style>
+      .mui-btn--primary {
+        background-color: #63877b; 
+      }
+    </style>
+    {% if user.is_authenticated %}
+    <button class="mui-btn mui-btn--raised mui-btn--primary">
+      <a href="/chat/" target="_blank" style="color: #fff; text-decoration: none;">Live chat: talk to people</a>
+    </button>
+    {% endif %}
+    </div>
+
+    <div class="col-8" class="content">
+      {% block content %}Didn't render content{% endblock %}
+    </div>
+  </div>
+
+</div>
+
+{% include "./footer.html" %}

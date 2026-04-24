@@ -1,0 +1,105 @@
+{% extends "./base.html" %}
+{% load bootstrap4 %}
+{% block content %}
+
+<script>
+
+    function createStatusModal() {
+        // initialize modal element
+        var UserPostsDiv = document.createElement('div');
+        UserPostsDiv.style.width = '500px';
+        UserPostsDiv.style.margin = '150px auto';
+        UserPostsDiv.style.padding = '20px';
+        UserPostsDiv.style.backgroundColor = '#76917d';
+        UserPostsDiv.innerHTML = `
+    <h1>Create Status Post</h1>
+    <form action="/create_post/" method="post" class="form">
+        {% csrf_token %}
+        <label for="post_content">Post Content:</label><br>
+        <input type="text" id="post_content" name="post_content"><br><br>
+        <input type="submit" value="Submit">
+    </form>
+    <br>
+    <div class="mui-divider"></div>
+    <h1> Create Image Post </h1>
+    <form action="/api/image/" method="post" class="form" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="name">Name:</label><br>
+    <input type="text" id="name" name="name"><br><br>
+    <label for="image">Upload Image:</label><br>
+    <input type="file" id="image" name="image"><br><br>
+    <input type="submit" value="Submit">
+    </form>`
+        // show modal
+        mui.overlay('on', UserPostsDiv);
+    }
+</script>
+
+<hr />
+
+<table>
+    <tr>
+        <th>
+            {% if user_form %}
+            <button class="mui-btn mui-btn--primary" onclick="createStatusModal()">Create Post</button>
+            <br>
+            Your status posts:
+            {% else %}
+            <img src="/images/{{ viewed_user.avatar }}" id="avatar" alt="avatar" width="100px" height="100px">
+            {% if following %}
+            <form method="POST" action="{% url 'unfollow' username=target_user.username %}">
+                {% csrf_token %}
+                <button type="submit" class="mui-btn mui-btn--primary">Unfollow {{target_user.username}}</button>
+              </form>              
+            {% else %}
+            <form method="POST" action="{% url 'follow' username=target_user.username %}">
+                {% csrf_token %}
+                <button type="submit" class="mui-btn mui-btn--primary">Follow {{target_user.username}}</button>
+              </form>              
+            {% endif %}
+              <hr>
+            Status posts by {{target_user.username}}:
+            {% endif %}
+        </th>
+    </tr>
+    {% for post in posts %}
+    <tr>
+        <td>
+            {{post.timestamp}}:
+        </td>
+        <td>
+            {{post.post_content}}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<table>
+    <tr>
+        <th>
+            {% if user_form %}
+            Your uploaded images:
+            {% else %}
+            Images uploaded by {{target_user.username}}:
+            {% endif %}
+        </th>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        {% for image in images %}
+        <td>
+            {% if user.is_authenticated %}
+                <a href="/images/{{image.image}}" target="_blank">
+            {% else %}
+                <a href="/login/">
+                {% endif %}
+                <img src="/images/{{image.thumbnail}}" alt="{{image.name}}" title="{{image.name}}">
+            </a>
+        </td>
+        {% endfor %}
+    </tr>
+</table>
+
+{% endblock %}
